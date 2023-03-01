@@ -1,66 +1,46 @@
 const contacts = require("../models/contacts");
-const { HttpError } = require("../helpers");
+const { HttpError, ctrlWrapper } = require("../helpers");
 
-const getAll = async (req, res, next) => {
-  try {
-    console.log("result");
-    const result = await contacts.listContacts();
-    res.json(result);
-  } catch (error) {
-    next(error);
-  }
+const getAll = async (req, res) => {
+  const result = await contacts.listContacts();
+  res.json(result);
 };
-const getById = async (req, res, next) => {
-  try {
-    const { contactId } = req.params;
-    const result = await contacts.getContactById(contactId);
+const getById = async (req, res) => {
+  const { contactId } = req.params;
+  const result = await contacts.getContactById(contactId);
 
-    if (!result) {
-      throw HttpError(404);
-    }
-    res.json(result);
-  } catch (error) {
-    next(error);
+  if (!result) {
+    throw HttpError(404);
   }
+  res.json(result);
 };
-const add = async (req, res, next) => {
-  try {
-    const result = await contacts.addContact(req.body);
-    res.json(result);
-  } catch (error) {
-    next(error);
-  }
+const add = async (req, res) => {
+  console.log("req");
+  const result = await contacts.addContact(req.body);
+  res.status(201).json(result);
 };
-const remove = async (req, res, next) => {
-  try {
-    const { contactId } = req.params;
-    const result = await contacts.removeContact(contactId);
+const remove = async (req, res) => {
+  const { contactId } = req.params;
+  const result = await contacts.removeContact(contactId);
 
-    if (!result) {
-      throw HttpError(404);
-    }
-    res.json({ message: "Contact delete" });
-  } catch (error) {
-    next(error);
+  if (!result) {
+    throw HttpError(404);
   }
+  res.json({ message: "Contact delete" });
 };
-const update = async (req, res, next) => {
-  try {
-    const { contactId } = req.params;
-    const result = await contacts.updateContact(contactId, req.body);
-    if (!result) {
-      throw HttpError(404);
-    }
-    res.json(result);
-  } catch (error) {
-    next(error);
+const updateById = async (req, res) => {
+  const { contactId } = req.params;
+  const result = await contacts.updateContact(contactId, req.body);
+  if (!result) {
+    throw HttpError(404);
   }
+  res.json(result);
 };
 
 module.exports = {
-  getAll,
-  getById,
-  add,
-  remove,
-  update,
+  getAll: ctrlWrapper(getAll),
+  getById: ctrlWrapper(getById),
+  add: ctrlWrapper(add),
+  remove: ctrlWrapper(remove),
+  updateById: ctrlWrapper(updateById),
 };
