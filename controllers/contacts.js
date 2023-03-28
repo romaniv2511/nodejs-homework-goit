@@ -1,46 +1,63 @@
-const contacts = require("../models/contacts");
-const { HttpError, ctrlWrapper } = require("../helpers");
+const { Contact } = require("../models/contact");
+const { ctrlWrapper, HttpError } = require("../helpers/index");
 
 const getAll = async (req, res) => {
-  const result = await contacts.listContacts();
+  const result = await Contact.find();
   res.json(result);
 };
+
 const getById = async (req, res) => {
   const { contactId } = req.params;
-  const result = await contacts.getContactById(contactId);
-
+  const result = await Contact.findById(contactId);
   if (!result) {
     throw HttpError(404);
   }
   res.json(result);
 };
+
 const add = async (req, res) => {
-  console.log("req");
-  const result = await contacts.addContact(req.body);
+  const result = await Contact.create(req.body);
   res.status(201).json(result);
 };
-const remove = async (req, res) => {
-  const { contactId } = req.params;
-  const result = await contacts.removeContact(contactId);
 
-  if (!result) {
-    throw HttpError(404);
-  }
-  res.json({ message: "Contact delete" });
-};
 const updateById = async (req, res) => {
   const { contactId } = req.params;
-  const result = await contacts.updateContact(contactId, req.body);
+  const result = await Contact.findByIdAndUpdate(contactId, req.body, {
+    new: true,
+  });
   if (!result) {
     throw HttpError(404);
   }
   res.json(result);
+};
+const updateFavorite = async (req, res) => {
+  const { contactId } = req.params;
+  const result = await Contact.findByIdAndUpdate(contactId, req.body, {
+    new: true,
+  });
+  if (!result) {
+    throw HttpError(404);
+  }
+  res.json(result);
+};
+const deleteById = async (req, res) => {
+  const { contactId } = req.params;
+  const result = await Contact.findByIdAndUpdate(contactId, req.body, {
+    new: true,
+  });
+  if (!result) {
+    throw HttpError(404);
+  }
+  res.json({
+    message: "Contact delete",
+  });
 };
 
 module.exports = {
   getAll: ctrlWrapper(getAll),
   getById: ctrlWrapper(getById),
   add: ctrlWrapper(add),
-  remove: ctrlWrapper(remove),
   updateById: ctrlWrapper(updateById),
+  updateFavorite: ctrlWrapper(updateFavorite),
+  deleteById: ctrlWrapper(deleteById),
 };
