@@ -1,4 +1,6 @@
 const validateBody = require("./validateBody");
 const authenticate = require("./authenticate");
 const upload = require("./upload");
-module.exports = { validateBody, authenticate, upload };
+const sendEmail = require("../helpers/sendEmail");
+
+module.exports = { validateBody, authenticate, upload, sendEmail };
